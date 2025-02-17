@@ -43,7 +43,7 @@ public class SecurityConfig {
         // works step by step, just like a chain if-else -> if-else -> if-else (nested in depth)
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/login", "/error")
+                        .requestMatchers("/auth/login", "/auth/registration", "/error")
                         .permitAll() // permit all requests for listed resources
                         .anyRequest().authenticated() // any other requests should be authenticated
                 )
