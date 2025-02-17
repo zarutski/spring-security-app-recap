@@ -53,6 +53,9 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/hello", true) // redirect (by Spring) in case of successful authentication
                         .failureUrl("/auth/login?error") // redirect in case of failure (additional parameter 'error' for error message rendering)
                 )
+                .logout(logout -> logout
+                        .logoutUrl("/logout") // URL for logout requests [user will be removed from session, browser will no longer store cookies]
+                        .logoutSuccessUrl("/auth/login")) // redirect URL after successful logout
                 .csrf(AbstractHttpConfigurer::disable); // disable CSRF (csrf token should be passed with every request, disabled for now)
 
         return http.build();
