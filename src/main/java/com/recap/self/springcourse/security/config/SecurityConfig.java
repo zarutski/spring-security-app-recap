@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -54,8 +53,8 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout") // URL for logout requests [user will be removed from session, browser will no longer store cookies]
-                        .logoutSuccessUrl("/auth/login")) // redirect URL after successful logout
-                .csrf(AbstractHttpConfigurer::disable); // disable CSRF (csrf token should be passed with every request, disabled for now)
+                        .logoutSuccessUrl("/auth/login")); // redirect URL after successful logout
+        // CSRF protection enabled by default (csrf token should be passed with every request, disabled for now)
 
         return http.build();
     }

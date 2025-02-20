@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Hello</title>
@@ -7,6 +7,9 @@
 <body>
 Hello, secured
 <br/>
-<a href="/logout">Logout</a>
+<!-- for CSRF protection logout process should be performed only using POST request -->
+<form th:action="@{/logout}" th:method="POST">
+    <input type="submit" value="Logout">
+</form>
 </body>
 </html>
