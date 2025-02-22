@@ -2,10 +2,11 @@ package com.recap.self.springcourse.security.secure;
 
 import com.recap.self.springcourse.security.model.Person;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 public class PersonDetails implements UserDetails {
 
@@ -15,9 +16,10 @@ public class PersonDetails implements UserDetails {
         this.person = person;
     }
 
+    // --- simple role implementation [through SimpleGrantedAuthority]
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return Collections.singletonList(new SimpleGrantedAuthority(person.getRole()));
     }
 
     @Override

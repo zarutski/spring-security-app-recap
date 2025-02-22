@@ -12,6 +12,8 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class PeopleService {
+    
+    private static final String ROLE_USER = "ROLE_USER";
 
     private final PeopleRepository peopleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -28,6 +30,7 @@ public class PeopleService {
 
     @Transactional
     public void register(Person person) {
+        person.setRole(ROLE_USER);
         person.setPassword(passwordEncoder.encode(person.getPassword())); // should manually encode password, using configured PasswordEncoder
         peopleRepository.save(person);
     }

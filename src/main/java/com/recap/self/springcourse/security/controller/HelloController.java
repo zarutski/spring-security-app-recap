@@ -24,4 +24,9 @@ public class HelloController {
         System.out.println("Simple logging: " + person);
         return "hello";
     }
+
+    @GetMapping("/admin")
+    public String adminPage() {
+        return "admin";
+    }
 }

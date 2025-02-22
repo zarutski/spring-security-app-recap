@@ -39,11 +39,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // works step by step, just like a chain if-else -> if-else -> if-else (nested in depth)
+        // so more specific rules better to move upper (for any request Spring will apply first matched rule without moving forward)
         http
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/admin").hasRole("ADMIN") // prefix ROLE_ used to identify stored values for Roles [automatically parsed by Spring] --- also method hasAuthority() will check full argument match [not considering prefix]
                         .requestMatchers("/auth/login", "/auth/registration", "/error")
                         .permitAll() // permit all requests for listed resources
-                        .anyRequest().authenticated() // any other requests should be authenticated
+                        .anyRequest().hasAnyRole("USER", "ADMIN") // any other resources [only users with one of the listed Roles]
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login") // page used by Spring for default login page replacement
