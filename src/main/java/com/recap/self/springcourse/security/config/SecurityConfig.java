@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) // security configuration on method-level [prePostEnabled(default = true) - adds Pre/Post authorize method configuration; without it only @Secured @RolesAllowed annotations available]
 public class SecurityConfig {
 
     private final PersonDetailsService personDetailsService;
@@ -42,7 +44,6 @@ public class SecurityConfig {
         // so more specific rules better to move upper (for any request Spring will apply first matched rule without moving forward)
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin").hasRole("ADMIN") // prefix ROLE_ used to identify stored values for Roles [automatically parsed by Spring] --- also method hasAuthority() will check full argument match [not considering prefix]
                         .requestMatchers("/auth/login", "/auth/registration", "/error")
                         .permitAll() // permit all requests for listed resources
                         .anyRequest().hasAnyRole("USER", "ADMIN") // any other resources [only users with one of the listed Roles]
