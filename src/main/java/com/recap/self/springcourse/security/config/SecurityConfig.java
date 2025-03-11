@@ -4,23 +4,33 @@ import com.recap.self.springcourse.security.service.PersonDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // security configuration on method-level [prePostEnabled(default = true) - adds Pre/Post authorize method configuration; without it only @Secured @RolesAllowed annotations available]
+@EnableMethodSecurity(prePostEnabled = true)
+// security configuration on method-level [prePostEnabled(default = true) - adds Pre/Post authorize method configuration; without it only @Secured @RolesAllowed annotations available]
 public class SecurityConfig {
 
     private final PersonDetailsService personDetailsService;
+    private final JWTFilter jwtFilter;
 
     @Autowired
-    public SecurityConfig(PersonDetailsService personDetailsService) {
+    public SecurityConfig(PersonDetailsService personDetailsService, JWTFilter jwtFilter) {
         this.personDetailsService = personDetailsService;
+        this.jwtFilter = jwtFilter;
     }
 
     // authentication configuration [integration of UserDetailsService with authentication process]
@@ -56,10 +66,18 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout") // URL for logout requests [user will be removed from session, browser will no longer store cookies]
-                        .logoutSuccessUrl("/auth/login")); // redirect URL after successful logout
-        // CSRF protection enabled by default (csrf token should be passed with every request, disabled for now)
+                        .logoutSuccessUrl("/auth/login")) // redirect URL after successful logout
+                .csrf(AbstractHttpConfigurer::disable) // disable protection for REST API communication
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // sessions will not be stored anymore
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // adds filter for JWT check into the chain
 
         return http.build();
     }
 
+    // Bean for authentication management [here - using DAO credentials check]
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        return new ProviderManager(List.of(authenticationProvider()));
+    }
 }
