@@ -3,6 +3,6 @@ create table if not exists person (
 	username varchar(100) not null unique,
 	year_of_birth int check (year_of_birth > 1899 and year_of_birth < 2026),
 	password varchar not null
-)
+);
 
 alter table person add column if not exists role varchar(100) not null;
